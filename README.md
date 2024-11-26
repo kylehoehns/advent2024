@@ -5,7 +5,7 @@ This repo contains solutions for [Advent of Code 2024](https://adventofcode.com/
 ## Running
 
 ```shell
-./gradlew bootRun --args="day00"
+./gradlew bootRun --args=day00
 ```
 
 ## Tech Stack
