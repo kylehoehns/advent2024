@@ -1,6 +1,5 @@
 package com.kylehoehns.advent2024.day06;
 
-import com.kylehoehns.advent2024.day05.Day05;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

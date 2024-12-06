@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class Day06 implements Puzzle {
@@ -130,16 +134,28 @@ public class Day06 implements Puzzle {
         Grid originalGrid = parseGrid();
         Set<Position> visitedPositions = getVisitedPositions(originalGrid);
 
-        for (var position : visitedPositions) {
-            Grid grid = parseGrid();
-            grid.data.get(position.row).set(position.col, OBSTRUCTION);
-            if (hasLoop(grid)) {
-                loopsDetected++;
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<Boolean>> results = visitedPositions.stream()
+                    .map(position -> executor.submit(() -> {
+                        Grid grid = parseGrid();
+                        grid.data.get(position.row).set(position.col, OBSTRUCTION);
+                        return hasLoop(grid);
+                    }))
+                    .toList();
+
+            for (Future<Boolean> result : results) {
+                if (result.get()) {
+                    loopsDetected++;
+                }
             }
+        } catch (Exception e) {
+           LOGGER.error("Error occurred solving part 2.", e);
+           return -1;
         }
 
         return loopsDetected;
     }
+
 
     private boolean hasLoop(Grid grid) {
         Set<Guard> seenGuards = new HashSet<>();
